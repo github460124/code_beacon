@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.indigo,
       ),
       home: MainPageControl(),
     );
@@ -58,7 +58,7 @@ class _MainPageControlState extends State<MainPageControl> {
       case 2:
         return Icon(Icons.more_horiz);
     }
-    return Icon(Icons.accessibility);
+    //return Icon(Icons.accessibility);
   }
 
   Text getText(int index) {
@@ -75,11 +75,17 @@ class _MainPageControlState extends State<MainPageControl> {
     return Scaffold(
       //appBar: AppBar(),
       body: PageView(
+        onPageChanged: (int index){setState(() {
+          _CurrentIndex = index;
+        });},
+        physics: ScrollPhysics(),
+        //scrollDirection: Axis.horizontal,
+        //pageSnapping: true,
         controller: _controller,
         children: <Widget>[
             HomePage(),RoomChooseDemo(),MorePage(),
         ],
-        physics: NeverScrollableScrollPhysics(),
+        //physics: NeverScrollableScrollPhysics(),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex:_CurrentIndex,
@@ -105,8 +111,8 @@ class _MainPageControlState extends State<MainPageControl> {
           ),
 
         ],
-        iconSize: 24,
-        fixedColor: Colors.blue,
+        iconSize: 32,
+        fixedColor: Colors.indigo,
       ),
     );
   }

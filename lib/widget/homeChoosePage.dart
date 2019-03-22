@@ -25,7 +25,7 @@ final Set<Room> _favoriteRecipes = Set<Room>();
 
 final ThemeData _mTheme = ThemeData(
   brightness: Brightness.light,
-  primarySwatch: Colors.blue,
+  primarySwatch: Colors.indigo,
   accentColor: Colors.redAccent,
 );
 
@@ -61,14 +61,6 @@ class _RoomChoosePageState extends State<RoomChoosePage> {
       data: _mTheme.copyWith(platform: Theme.of(context).platform),
       child: Scaffold(
         key: scaffoldKey,
-        /*floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.edit),
-          onPressed: () {
-            scaffoldKey.currentState.showSnackBar(const SnackBar(
-              content: Text('Not supported.'),
-            ));
-          },
-        ),*/
         body: CustomScrollView(
           semanticChildCount: widget.roomInfoList.length,
           slivers: <Widget>[
@@ -83,7 +75,9 @@ class _RoomChoosePageState extends State<RoomChoosePage> {
   _buildAppBar(BuildContext context, statusBarHeight) {
     return SliverAppBar(
       pinned: true,
-      expandedHeight: _kAppBarHeight,
+      //expandedHeight: _kAppBarHeight,
+      title: Text('All Rooms'),
+      centerTitle: true,
       actions: <Widget>[
         IconButton(
           icon: const Icon(Icons.search),
@@ -97,7 +91,7 @@ class _RoomChoosePageState extends State<RoomChoosePage> {
           },
         ),
       ],
-      flexibleSpace: LayoutBuilder(
+      /*flexibleSpace: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           final Size size = constraints.biggest;
           final double appBarHeight = size.height - statusBarHeight;
@@ -112,11 +106,14 @@ class _RoomChoosePageState extends State<RoomChoosePage> {
               bottom: extraPadding,
             ),
             child: Center(
-              child: Icon(Icons.ac_unit),
+              child: Text(
+                '所有房间',
+                style: TextStyle(fontSize: 26),
+              ),
             ),
           );
         },
-      ),
+      ),*/
     );
   }
 
@@ -133,7 +130,8 @@ class _RoomChoosePageState extends State<RoomChoosePage> {
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: _kRecipePageMaxWidth,
           crossAxisSpacing: 2.0,
-          mainAxisSpacing: 28.0,
+          mainAxisSpacing: 18.0,
+          childAspectRatio: 1.7,
         ),
         delegate: SliverChildBuilderDelegate(
           (BuildContext context, int index) {
@@ -183,7 +181,15 @@ class RoomPage extends StatefulWidget {
 
 class _RoomePageState extends State<RoomPage> {
   double _getAppBarHeight(BuildContext context) =>
-      MediaQuery.of(context).size.height * 0.3;
+      MediaQuery.of(context).size.height * 0.2;
+  bool isFavorite = false;
+  bool light1 = true;
+  bool light2 = false;
+  bool light3 = true;
+  bool light4 = false;
+  double buttonBoxHeight = 90;
+
+  double appBarAlpha = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -193,46 +199,875 @@ class _RoomePageState extends State<RoomPage> {
     return Scaffold(
       body: Stack(
         children: <Widget>[
-          Positioned(  //Hero目标
-            top: 0.0,
-            left: 0.0,
-            right: 0.0,
-            height: appBarHeight ,
-            child: Hero(
-              tag: 'packages/$_codeBeaconPackage/${widget.room.imagePath}',
-              child: Image.asset(
-                widget.room.imagePath,
-                //package: widget.room.imagePackage,
-                fit: BoxFit.fill,
-              ),
-            ),
-          ),
+          MediaQuery.removePadding(
+            removeTop: true,
+            context: context,
+            child: NotificationListener(
+              onNotification: (scrollNotification) {
+                if (scrollNotification is ScrollUpdateNotification &&
+                    scrollNotification.depth == 0) {
+                  _OnScrool(scrollNotification.metrics.pixels);
+                }
+              },
+              child: ListView(
+                children: <Widget>[
+                  Stack(
+                    children: <Widget>[
+                      SizedBox(
+                        //Hero目标
+                        //top: 0.0,
+                        //left: 0.0,
+                        //right: 0.0,
+                        height: appBarHeight,
+                        width: MediaQuery.of(context).size.width,
+                        child: Hero(
+                          tag:
+                              'packages/$_codeBeaconPackage/${widget.room.imagePath}',
+                          child: Image.asset(
+                            widget.room.imagePath,
+                            //package: widget.room.imagePackage,
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 120,
+                        right: 16.0,
+                        child: FloatingActionButton(
+                            child: Icon(isFavorite
+                                ? Icons.favorite
+                                : Icons.favorite_border),
+                            onPressed: () {
+                              setState(() {
+                                isFavorite = !isFavorite;
+                              });
+                            }),
+                      ),
+                    ],
+                  ),
 
-          CustomScrollView(
-            slivers: <Widget>[
-              SliverAppBar(
-                expandedHeight: appBarHeight - _kFabHalfSize,//展开高度
-                backgroundColor: Colors.transparent,
-                flexibleSpace: const FlexibleSpaceBar(  //展开区域
-                  background: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment(0.0, -1.0),
-                        end: Alignment(0.0, -0.2),
-                        colors: <Color>[Color(0x60000000), Color(0x00000000)],
+                  Container(
+                    padding: const EdgeInsets.only(top: _kFabHalfSize),
+                    child: Container(
+                      margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                      child: Column(
+                        children: <Widget>[
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              '${widget.room.name}',
+                              style: TextStyle(fontSize: 28),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.fromLTRB(5, 5, 5, 0),
+                            child: Row(
+                              children: <Widget>[
+                                Text(
+                                  '温度：${widget.room.temperature}℃     ',
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                                Text(
+                                  '湿度：${widget.room.humidity}℃',
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            margin: EdgeInsets.fromLTRB(5, 5, 5, 0),
+                            child: Text(
+                              '设备',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                            child: Center(
+                              child: Column(
+                                children: <Widget>[
+                                  Row(
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: Container(
+                                          margin: EdgeInsets.all(8),
+                                          child: SizedBox(
+                                            height: buttonBoxHeight,
+                                            child: RaisedButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  light1 = !light1;
+                                                });
+                                              },
+                                              splashColor: light1
+                                                  ? Colors.grey
+                                                  : Colors.amber,
+                                              elevation: 5,
+                                              color: Colors.white,
+                                              child: Container(
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      Icons.lightbulb_outline,
+                                                      color: light1
+                                                          ? Colors.amber
+                                                          : Colors.grey,
+                                                    ),
+                                                    Text(light1
+                                                        ? '灯光全开'
+                                                        : '灯光全关'),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Container(
+                                          margin: EdgeInsets.all(8),
+                                          child: SizedBox(
+                                            height: buttonBoxHeight,
+                                            child: RaisedButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  light2 = !light2;
+                                                });
+                                              },
+                                              splashColor: light2
+                                                  ? Colors.grey
+                                                  : Colors.amber,
+                                              elevation: 5,
+                                              color: Colors.white,
+                                              child: Container(
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      Icons.lightbulb_outline,
+                                                      color: light2
+                                                          ? Colors.amber
+                                                          : Colors.grey,
+                                                    ),
+                                                    Text(
+                                                      light2 ? '灯光全开' : '灯光全关',
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: Container(
+                                          margin: EdgeInsets.all(8),
+                                          child: SizedBox(
+                                            height: buttonBoxHeight,
+                                            child: RaisedButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  light3 = !light3;
+                                                });
+                                              },
+                                              splashColor: light3
+                                                  ? Colors.grey
+                                                  : Colors.amber,
+                                              elevation: 5,
+                                              color: Colors.white,
+                                              child: Container(
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      Icons.lightbulb_outline,
+                                                      color: light3
+                                                          ? Colors.amber
+                                                          : Colors.grey,
+                                                    ),
+                                                    Text(light3
+                                                        ? '灯光全开'
+                                                        : '灯光全关'),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Container(
+                                          margin: EdgeInsets.all(8),
+                                          child: SizedBox(
+                                            height: buttonBoxHeight,
+                                            child: RaisedButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  light4 = !light4;
+                                                });
+                                              },
+                                              splashColor: light4
+                                                  ? Colors.grey
+                                                  : Colors.amber,
+                                              elevation: 5,
+                                              color: Colors.white,
+                                              child: Container(
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      Icons.lightbulb_outline,
+                                                      color: light4
+                                                          ? Colors.amber
+                                                          : Colors.grey,
+                                                    ),
+                                                    Text(light4
+                                                        ? '灯光全开'
+                                                        : '灯光全关'),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            margin: EdgeInsets.fromLTRB(5, 20, 5, 0),
+                            child: Text(
+                              '房间场景',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.fromLTRB(5, 10, 5, 0),
+                            child: Center(
+                              child: Column(
+                                children: <Widget>[
+                                  Row(
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: SizedBox(
+                                          height: buttonBoxHeight,
+                                          child: Card(
+                                            elevation: 5,
+                                            child: Container(
+                                              child: Row(
+                                                children: <Widget>[
+                                                  Expanded(
+                                                    flex: 4,
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceEvenly,
+                                                      children: <Widget>[
+                                                        Icon(
+                                                          Icons
+                                                              .lightbulb_outline,
+                                                          color:
+                                                              widget.room.light
+                                                                  ? Colors.amber
+                                                                  : Colors.grey,
+                                                        ),
+                                                        Text('灯光'),
+                                                        Text('灯光已打开'),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    flex: 1,
+                                                    child: Container(
+                                                      alignment:
+                                                          Alignment.topRight,
+                                                      child: IconButton(
+                                                        icon: Icon(Icons.menu),
+                                                        onPressed: () {},
+                                                      ),
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: SizedBox(
+                                          height: buttonBoxHeight,
+                                          child: Card(
+                                            elevation: 5,
+                                            child: Container(
+                                              child: Row(
+                                                children: <Widget>[
+                                                  Expanded(
+                                                    flex: 4,
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceEvenly,
+                                                      children: <Widget>[
+                                                        Icon(
+                                                          Icons
+                                                              .lightbulb_outline,
+                                                          color:
+                                                              widget.room.light
+                                                                  ? Colors.amber
+                                                                  : Colors.grey,
+                                                        ),
+                                                        Text('灯光'),
+                                                        Text('灯光已打开'),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    flex: 1,
+                                                    child: Container(
+                                                      alignment:
+                                                          Alignment.topRight,
+                                                      child: Icon(Icons.menu),
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: SizedBox(
+                                          height: buttonBoxHeight,
+                                          child: Card(
+                                            elevation: 5,
+                                            child: Container(
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                children: <Widget>[
+                                                  Icon(
+                                                    Icons.lightbulb_outline,
+                                                    color: widget.room.light
+                                                        ? Colors.amber
+                                                        : Colors.grey,
+                                                  ),
+                                                  Text('灯光全开'),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: SizedBox(
+                                          height: buttonBoxHeight,
+                                          child: Card(
+                                            elevation: 5,
+                                            child: Container(
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                children: <Widget>[
+                                                  Icon(
+                                                    Icons.lightbulb_outline,
+                                                    color: widget.room.light
+                                                        ? Colors.amber
+                                                        : Colors.grey,
+                                                  ),
+                                                  Text('灯光全开'),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                SizedBox(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Expanded(
+                                        flex: 1,
+                                        child: IconButton(
+                                          icon: Icon(Icons.ac_unit),
+                                          onPressed: null,
+                                          alignment: Alignment.center,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 6,
+                                        child: Text(
+                                          '设置温度:${widget.room.temperature}℃',
+                                          style: TextStyle(fontSize: 18),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: IconButton(
+                                            icon: Icon(Icons.menu),
+                                            onPressed: null),
+                                      ),
+                                    ],
+                                  ),
+                                  width: 300,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Container(
+                                      alignment: Alignment.center,
+                                      child: SizedBox(
+                                        width: 300,
+                                        child: Row(
+                                          children: <Widget>[
+                                            Expanded(
+                                              child: IconButton(
+                                                icon: Icon(Icons.add),
+                                                onPressed: null,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: IconButton(
+                                                icon: Icon(Icons.add),
+                                                onPressed: null,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
+                  SizedBox(
+                    height: 800,
+                  )
+                ],
+              ),
+            ),
+          ),
+          Opacity(
+            opacity: appBarAlpha,
+            child: SizedBox(
+              height: 110,
+              child: AppBar(
+                centerTitle: true,
+                title: Text('${widget.room.name}',
                 ),
               ),
-
-            ],
+            ),
           ),
-
         ],
       ),
     );
   }
+
+  _OnScrool(double pixels) {
+    double alpha = pixels / 90;
+    if (alpha > 1) alpha = 1;
+    if (alpha < 0) alpha = 0;
+    setState(() {
+      appBarAlpha = alpha;
+    });
+  }
+}
+
+Widget RoomInfo(Room room) {
+  return Container(
+    margin: EdgeInsets.fromLTRB(20, 10, 20, 0),
+    child: Column(
+      children: <Widget>[
+        Container(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            '${room.name}',
+            style: TextStyle(fontSize: 28),
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.fromLTRB(5, 20, 5, 0),
+          child: Row(
+            children: <Widget>[
+              Text(
+                '温度：${room.temperature}℃     ',
+                style: TextStyle(fontSize: 18),
+              ),
+              Text(
+                '湿度：${room.humidity}℃',
+                style: TextStyle(fontSize: 18),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          alignment: Alignment.centerLeft,
+          margin: EdgeInsets.fromLTRB(5, 20, 5, 0),
+          child: Text(
+            '设备',
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.fromLTRB(5, 10, 5, 0),
+          child: Center(
+            child: Column(
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: SizedBox(
+                        height: 90,
+                        child: RaisedButton(
+                          onPressed: () {},
+                          elevation: 5,
+                          color: Colors.white,
+                          child: Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Icon(
+                                  Icons.lightbulb_outline,
+                                  color:
+                                      room.light ? Colors.amber : Colors.grey,
+                                ),
+                                Text('灯光全开'),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: SizedBox(
+                        height: 90,
+                        child: Card(
+                          elevation: 5,
+                          child: Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Icon(
+                                  Icons.lightbulb_outline,
+                                  color:
+                                      room.light ? Colors.amber : Colors.grey,
+                                ),
+                                Text('灯光全开'),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: SizedBox(
+                        height: 90,
+                        child: Card(
+                          elevation: 5,
+                          child: Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Icon(
+                                  Icons.lightbulb_outline,
+                                  color:
+                                      !room.light ? Colors.amber : Colors.grey,
+                                ),
+                                Text(!room.light ? '灯光全开' : '灯光全关'),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: SizedBox(
+                        height: 90,
+                        child: Card(
+                          elevation: 5,
+                          child: Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Icon(
+                                  Icons.lightbulb_outline,
+                                  color:
+                                      !room.light ? Colors.amber : Colors.grey,
+                                ),
+                                Text(!room.light ? '灯光全开' : '灯光全关'),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        Container(
+          alignment: Alignment.centerLeft,
+          margin: EdgeInsets.fromLTRB(5, 20, 5, 0),
+          child: Text(
+            '房间场景',
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.fromLTRB(5, 10, 5, 0),
+          child: Center(
+            child: Column(
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: SizedBox(
+                        height: 90,
+                        child: Card(
+                          elevation: 5,
+                          child: Container(
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                  flex: 4,
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: <Widget>[
+                                      Icon(
+                                        Icons.lightbulb_outline,
+                                        color: room.light
+                                            ? Colors.amber
+                                            : Colors.grey,
+                                      ),
+                                      Text('灯光'),
+                                      Text('灯光已打开'),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Container(
+                                    alignment: Alignment.topRight,
+                                    child: Icon(Icons.menu),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: SizedBox(
+                        height: 90,
+                        child: Card(
+                          elevation: 5,
+                          child: Container(
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                  flex: 4,
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: <Widget>[
+                                      Icon(
+                                        Icons.lightbulb_outline,
+                                        color: room.light
+                                            ? Colors.amber
+                                            : Colors.grey,
+                                      ),
+                                      Text('灯光'),
+                                      Text('灯光已打开'),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Container(
+                                    alignment: Alignment.topRight,
+                                    child: Icon(Icons.menu),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: SizedBox(
+                        height: 90,
+                        child: Card(
+                          elevation: 5,
+                          child: Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Icon(
+                                  Icons.lightbulb_outline,
+                                  color:
+                                      room.light ? Colors.amber : Colors.grey,
+                                ),
+                                Text('灯光全开'),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: SizedBox(
+                        height: 90,
+                        child: Card(
+                          elevation: 5,
+                          child: Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Icon(
+                                  Icons.lightbulb_outline,
+                                  color:
+                                      room.light ? Colors.amber : Colors.grey,
+                                ),
+                                Text('灯光全开'),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 1,
+                      child: IconButton(
+                        icon: Icon(Icons.ac_unit),
+                        onPressed: null,
+                        alignment: Alignment.center,
+                      ),
+                    ),
+                    Expanded(
+                      flex: 6,
+                      child: Text(
+                        '设置温度:${room.temperature}℃',
+                        style: TextStyle(fontSize: 18),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child:
+                          IconButton(icon: Icon(Icons.menu), onPressed: null),
+                    ),
+                  ],
+                ),
+                width: 300,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      width: 300,
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: IconButton(
+                              icon: Icon(Icons.add),
+                              onPressed: null,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          Expanded(
+                            child: IconButton(
+                              icon: Icon(Icons.add),
+                              onPressed: null,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 400,
+        ),
+      ],
+    ),
+  );
 }
 
 class RoomCard extends StatelessWidget {
@@ -246,31 +1081,75 @@ class RoomCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Card(
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20.0)),
+        ),
+        elevation: 10,
+        semanticContainer: false,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Hero(
               tag: 'packages/$_codeBeaconPackage/${room.imagePath}',
-              child: AspectRatio(
-                aspectRatio: 4.0 / 3.0,
-                child: Image.asset(
-                  room.imagePath,
-                  //'lib/image/room_choose_bar.png',
-                  //package: room.imagePackage,
-                  fit: BoxFit.fill,
-                  semanticLabel: room.name,
+              child: Container(
+                child: Column(
+                  children: <Widget>[
+                    Image.asset(
+                      room.imagePath,
+                      //'lib/image/room_choose_bar.png',
+                      //package: room.imagePackage,
+                      fit: BoxFit.fill,
+                      semanticLabel: room.name,
+                      height: 100,
+                      width: MediaQuery.of(context).size.width,
+                    ),
+                  ],
                 ),
               ),
             ),
             Expanded(
-              child: Column(
-                children: <Widget>[
-                  Text(room.name),
-                  Text(room.description),
-                ],
+              child: Container(
+                height: 200,
+                margin: EdgeInsets.all(10),
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      child: Text(
+                        room.name,
+                        style: TextStyle(fontSize: 28),
+                      ),
+                      alignment: Alignment.centerLeft,
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Text(
+                          '温度：${room.temperature}℃     ',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        Text(
+                          '湿度：${room.humidity}℃',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Text(
+                          '灯光${room.light ? '已打开' : '未打开'}          ',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        Text(
+                          '窗帘${room.curtains ? '已打开' : '未打开'}',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
+            )
           ],
         ),
       ),
@@ -283,13 +1162,22 @@ class Room {
   final String description;
   final String imagePath;
   final String imagePackage;
+  final double temperature;
+  final double humidity;
+  final bool light;
+  final bool curtains;
+  final bool isFavorite;
 
-  const Room({
-    this.name,
-    this.description,
-    this.imagePath,
-    this.imagePackage,
-  });
+  const Room(
+      {this.name,
+      this.description,
+      this.imagePath,
+      this.imagePackage,
+      this.temperature,
+      this.humidity,
+      this.curtains,
+      this.light,
+      this.isFavorite});
 }
 
 const List<Room> roomInformationList = <Room>[
@@ -298,29 +1186,54 @@ const List<Room> roomInformationList = <Room>[
     description: '这是一个客厅',
     imagePath: 'lib/image/room_choose_hall.png',
     imagePackage: _codeBeaconPackage,
+    temperature: 24,
+    humidity: 60,
+    curtains: true,
+    light: true,
+    isFavorite: true,
   ),
   Room(
     name: "卧室1",
     description: '这是卧室1',
     imagePath: 'lib/image/room_choose_bedroom.png',
     imagePackage: _codeBeaconPackage,
+    temperature: 28,
+    humidity: 66,
+    curtains: true,
+    light: true,
+    isFavorite: true,
   ),
   Room(
     name: "卧室2",
     description: '这是卧室2',
     imagePath: 'lib/image/room_choose_bedroom02.png',
     imagePackage: _codeBeaconPackage,
+    temperature: 24,
+    humidity: 74,
+    curtains: true,
+    light: true,
+    isFavorite: true,
   ),
   Room(
     name: "厨房",
     description: '这是厨房',
     imagePath: 'lib/image/room_choose_cookroom.png',
     imagePackage: _codeBeaconPackage,
+    temperature: 26,
+    humidity: 77,
+    curtains: true,
+    light: true,
+    isFavorite: true,
   ),
   Room(
     name: "吧台",
     description: '这是吧台',
     imagePath: 'lib/image/room_choose_bar.png',
     imagePackage: _codeBeaconPackage,
+    temperature: 25,
+    humidity: 65,
+    curtains: true,
+    light: true,
+    isFavorite: true,
   ),
 ];

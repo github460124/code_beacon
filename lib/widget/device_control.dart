@@ -1,6 +1,5 @@
-
 import 'dart:core';
-import 'dart:math' ;
+import 'dart:math';
 import 'package:flutter/material.dart';
 
 typedef ProgressChanged<double> = void Function(double value);
@@ -8,8 +7,6 @@ typedef ProgressChanged<double> = void Function(double value);
 num degToRad(num deg) => deg * (pi / 180.0);
 
 num radToDeg(num rad) => rad * (180.0 / pi);
-
-
 
 class CircleProgressBar extends StatefulWidget {
   final double radius;
@@ -21,8 +18,6 @@ class CircleProgressBar extends StatefulWidget {
   final Color dotEdgeColor;
   final Color ringColor;
 
-
-
   final ProgressChanged progressChanged;
 
   const CircleProgressBar({
@@ -32,7 +27,7 @@ class CircleProgressBar extends StatefulWidget {
     @required this.dotColor,
     this.shadowWidth = 2.0,
     this.shadowColor = Colors.black12,
-    this.ringColor = Colors.blue,//const Color(0XFFF7F7FC),
+    this.ringColor = Colors.blue, //const Color(0XFFF7F7FC),
     this.dotEdgeColor = const Color(0XFFF5F5FA),
     this.progress,
     this.progressChanged,
@@ -40,31 +35,30 @@ class CircleProgressBar extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => _CircleProgressState();
-
-
 }
 
-
 class _CircleProgressState extends State<CircleProgressBar>
-    with SingleTickerProviderStateMixin{
+    with SingleTickerProviderStateMixin {
   AnimationController progressController;
   bool isValidTouch = false;
   final GlobalKey paintKey = GlobalKey();
+  bool isCold = true;
 
   @override
   void initState() {
     super.initState();
-    progressController = AnimationController(duration: Duration(milliseconds: 300), vsync: this);
+    progressController =
+        AnimationController(duration: Duration(milliseconds: 300), vsync: this);
     if (widget.progress != null) progressController.value = widget.progress;
     print("$widget+------init");
     progressController.addListener(() {
       if (widget.progressChanged != null)
         widget.progressChanged(progressController.value);
+      print("123456789${progressController.value}");
       //else print("progressChanged is null");
       setState(() {
-        print('${this.widget}:'+'widget changed');
-      }
-      );
+        print('${this.widget}:' + 'widget changed:${widget.progress}');
+      });
     });
   }
 
@@ -78,32 +72,190 @@ class _CircleProgressState extends State<CircleProgressBar>
   Widget build(BuildContext context) {
     final double width = widget.radius * 2.0;
     final size = new Size(width, width);
+    double pro = progressController.value;
     //progressController.value=widget.progress;
-    return GestureDetector(
-      onPanStart: _onPanStart,
-      onPanUpdate: _onPanUpdate,
-      onPanEnd: _onPanEnd,
-      onTapUp: _onTapUp,
-      child: Container(
-        alignment: FractionalOffset.center,
-        child: CustomPaint(
-          key: paintKey,
-          size: size,
-          painter: ProgressPainter(
-              dotRadius: widget.dotRadius,
-              shadowWidth: widget.shadowWidth,
-              shadowColor: widget.shadowColor,
-              ringColor: widget.ringColor,
-              dotColor: widget.dotColor,
-              dotEdgeColor: widget.dotEdgeColor,
-              //progress: progressController.value),
-              progress: widget.progress
+    return
+      Column(
+      children: <Widget>[
+        Stack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      '${(16 + progressController.value * 16.0).round()}',
+                      style: TextStyle(fontSize: 40.0),
+                    ),
+                    Text(
+                      ' ℃',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ],
+                ),
+                Container(
+                  margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                  child: new Column(
+                    children: <Widget>[
+                      Icon(
+                        Icons.ac_unit,
+                        color: isCold ? Colors.red : Colors.blue,
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                  child: new Column(
+                    children: <Widget>[
+                      Text(
+                        isCold ? "COLD" : "HOT",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            GestureDetector(
+              onPanStart: _onPanStart,
+              onPanUpdate: _onPanUpdate,
+              onPanEnd: _onPanEnd,
+              onTapUp: _onTapUp,
+              child: Container(
+                alignment: FractionalOffset.center,
+                child: CustomPaint(
+                  key: paintKey,
+                  size: size,
+                  painter: ProgressPainter(
+                      dotRadius: widget.dotRadius,
+                      shadowWidth: widget.shadowWidth,
+                      shadowColor: widget.shadowColor,
+                      ringColor: widget.ringColor,
+                      dotColor: widget.dotColor,
+                      dotEdgeColor: widget.dotEdgeColor,
+                      progress: pro),
+                  //progress: progressController.value),
+                  //progress: widget.progress,),
+                ),
+              ),
+            ),
+          ],
+        ),
+        Container(
+          //color: Colors.amber,
+          child: SizedBox(
+            //height: 200,
+            child: Column(
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Expanded(child: IconButton(icon: Icon(Icons.add), onPressed: (){}),flex: 2,),
+                    Expanded(child: Text('温度',style: TextStyle(fontSize: 20),textAlign: TextAlign.center,),flex: 4,),
+                    Expanded(child: IconButton(icon: Icon(Icons.add), onPressed: (){}),flex: 2,),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Expanded(child: IconButton(icon: Icon(Icons.add), onPressed: (){},),),
+                    Expanded(child: IconButton(icon: Icon(Icons.add), onPressed: (){},),),
+                    Expanded(child: IconButton(icon: Icon(Icons.add), onPressed: (){},),),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
-      ),
+        /*Container(
+          margin: EdgeInsets.fromLTRB(0, 50, 0, 50),
+          child: new Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+
+              // 第一行按钮
+              new Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  new Container(
+                    margin: EdgeInsets.fromLTRB(0, 10, 30, 10),
+                    child: RaisedButton(
+                      child: new Icon(Icons.arrow_back_ios),
+                      onPressed: null,
+                      highlightColor: Colors.blue,
+                      splashColor: Colors.blue,
+                      elevation: 10,
+                    ),
+                  ),
+                  new Container(
+                    margin: EdgeInsets.fromLTRB(50, 10, 50, 10),
+                    child: Text(
+                      "Temp",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                  new Container(
+                    margin: EdgeInsets.fromLTRB(30, 10, 0, 10),
+                    child: RaisedButton(
+                      onPressed: null,
+                      child: Icon(Icons.arrow_forward_ios),
+                      highlightColor: Colors.blue,
+                      splashColor: Colors.blue,
+                      elevation: 10,
+                    ),
+                  ),
+                ],
+              ),
+
+              //第二行按钮
+              new Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  new Container(
+                    margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                    child: RaisedButton(
+                      onPressed: null,
+                      child: Icon(
+                        Icons.ac_unit,
+                        color: isCold ? Colors.red : Colors.blue,
+                      ),
+                      highlightColor: isCold ? Colors.blue : Colors.red,
+                      splashColor: isCold ? Colors.blue : Colors.red,
+                      elevation: 10,
+                    ),
+                  ),
+                  new Container(
+                    margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                    child: RaisedButton(
+                      onPressed: null,
+                      child: Icon(Icons.ac_unit),
+                      highlightColor: Colors.red,
+                      splashColor: Colors.red,
+                      elevation: 10,
+                    ),
+                  ),
+                  new Container(
+                    margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                    child: RaisedButton(
+                      onPressed: null,
+                      child: Icon(Icons.ac_unit),
+                      highlightColor: Colors.red,
+                      splashColor: Colors.red,
+                      elevation: 10,
+                    ),
+                  ),
+                ],
+              ),
+
+            ],
+          ),
+        ),*/
+      ],
     );
   }
-
 
   void _onPanStart(DragStartDetails details) {
     print('---------onPanStart');
@@ -127,24 +279,23 @@ class _CircleProgressState extends State<CircleProgressBar>
     final double y = local.dy;
     final double center = widget.radius;
 
-    if((x<center)&&(y<center))
-    {
-      double radians =atan((center-y)/(center-x))+degToRad(60);
+    if ((x < center) && (y < center)) {
+      double radians = atan((center - y) / (center - x)) + degToRad(60);
       progressController.value = radians / degToRad(300.0);
     }
-    if((x>center)&&(y<center)){
-      double radians =atan((x-center)/(center-y))+degToRad(150);
-      progressController.value=radians/degToRad(300);
+    if ((x > center) && (y < center)) {
+      double radians = atan((x - center) / (center - y)) + degToRad(150);
+      progressController.value = radians / degToRad(300);
     }
-    if((x>center)&&(y>center)){
-      double radians = atan((y-center)/(x-center))+degToRad(240);
-      progressController.value=radians/degToRad(300);
-      double a=radToDeg(radians);
+    if ((x > center) && (y > center)) {
+      double radians = atan((y - center) / (x - center)) + degToRad(240);
+      progressController.value = radians / degToRad(300);
+      double a = radToDeg(radians);
     }
-    if((x<center)&&(y>center)){
-      double radians=degToRad(60)-atan((y-center)/(center-x));
-      double a=radToDeg(radians);
-      progressController.value=radians / degToRad(300);
+    if ((x < center) && (y > center)) {
+      double radians = degToRad(60) - atan((y - center) / (center - x));
+      double a = radToDeg(radians);
+      progressController.value = radians / degToRad(300);
     }
   }
 
@@ -155,63 +306,52 @@ class _CircleProgressState extends State<CircleProgressBar>
     print("onPanEnd--------");
   }
 
-
-  void _onTapUp(TapUpDetails details){
+  void _onTapUp(TapUpDetails details) {
     print('----------onTapUp----------');
 
     RenderBox getBox = paintKey.currentContext.findRenderObject();
     Offset local = getBox.globalToLocal(details.globalPosition);
-    print("${local.dx}--"+"--${local.dy}");
-    isValidTouch=_checkValidTouch(local);
+    print("${local.dx}--" + "--${local.dy}");
+    isValidTouch = _checkValidTouch(local);
     if (!isValidTouch) {
       return;
     }
     final double x = local.dx;
     final double y = local.dy;
     final double center = widget.radius;
-    var   temp1;
+    var temp1;
     //print("输出center ：$center");
 
-    if((x<center)&&(y<center))
-    {
-      double radians =atan((center-y)/(center-x))+degToRad(60);
-      progressController.value=radians / degToRad(300.0);
-
+    if ((x < center) && (y < center)) {
+      double radians = atan((center - y) / (center - x)) + degToRad(60);
+      progressController.value = radians / degToRad(300.0);
     }
-    if((x>center)&&(y<center)){
-      double radians =atan((x-center)/(center-y))+degToRad(150);
-      progressController.value=radians / degToRad(300.0);
-
+    if ((x > center) && (y < center)) {
+      double radians = atan((x - center) / (center - y)) + degToRad(150);
+      progressController.value = radians / degToRad(300.0);
     }
-    if((x>center)&&(y>center)){
-      double radians = atan((y-center)/(x-center))+degToRad(240);
-      progressController.value=radians / degToRad(300.0);
-
+    if ((x > center) && (y > center)) {
+      double radians = atan((y - center) / (x - center)) + degToRad(240);
+      progressController.value = radians / degToRad(300.0);
     }
-    if((x<center)&&(y>center)){
-      double radians=degToRad(60)-atan((y-center)/(center-x));
-      progressController.value=radians / degToRad(300.0);
+    if ((x < center) && (y > center)) {
+      double radians = degToRad(60) - atan((y - center) / (center - x));
+      progressController.value = radians / degToRad(300.0);
     }
   }
-
-
-
-
-
 
   bool _checkValidTouch(Offset pointer) {
     final double validInnerRadius = widget.radius - widget.dotRadius * 3;
     final double dx = pointer.dx;
     final double dy = pointer.dy;
     final double distanceToCenter =
-    sqrt(pow(dx - widget.radius, 2) + pow(dy - widget.radius, 2));
+        sqrt(pow(dx - widget.radius, 2) + pow(dy - widget.radius, 2));
     if (distanceToCenter < validInnerRadius ||
         distanceToCenter > widget.radius) {
       return false;
     }
     return true;
   }
-
 }
 
 class ProgressPainter extends CustomPainter {
@@ -235,34 +375,33 @@ class ProgressPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-
     double start = 30;
     double sweep1 = 300 * progress;
 
     //print("输出size :($size)");
 
-
-
     final progressPaint = Paint()
       ..color = Color.fromARGB(255, 0, 0, 255)
       ..strokeWidth = 3;
-    double drawDegree = 300 / 48  ;
+    double drawDegree = 300 / 48;
     int temp = 0;
-    while(drawDegree <= 300){
-      double a = (start + drawDegree) /180 * pi;
+    while (drawDegree <= 300) {
+      double a = (start + drawDegree) / 180 * pi;
       double lineStartX = size.width / 2 - size.width / 2 * sin(a);
       double lineStartY = size.width / 2 + size.width / 2 * cos(a);
       double lineStopX = lineStartX + 20 * sin(a);
       double lineStopY = lineStartY - 20 * cos(a);
 
       temp += 1;
-      progressPaint.color = Color.fromARGB(255, (255~/48*temp), 0, (255 - 255 ~/ 48 * temp));
-      if(drawDegree > sweep1){
-        progressPaint.color =Colors.grey ;//Colors.grey;
+      progressPaint.color =
+          Color.fromARGB(255, (255 ~/ 48 * temp), 0, (255 - 255 ~/ 48 * temp));
+      if (drawDegree > sweep1) {
+        progressPaint.color = Colors.grey; //Colors.grey;
         progressPaint.strokeWidth = 2;
       }
 
-      canvas.drawLine(new Offset(lineStartX, lineStartY), new Offset(lineStopX, lineStopY), progressPaint);
+      canvas.drawLine(new Offset(lineStartX, lineStartY),
+          new Offset(lineStopX, lineStopY), progressPaint);
       //print("$temp-----");
 
       /*
@@ -277,7 +416,6 @@ class ProgressPainter extends CustomPainter {
       print('-----------$sweep1');
        */
       drawDegree += (300 / (48 - 1));
-
     }
 
     /*
@@ -359,7 +497,6 @@ class ProgressPainter extends CustomPainter {
 //          ..strokeWidth = 1.0
 //          ..color = Colors.black);  // 测试基准线
 */
-
   }
 
   @override
@@ -367,8 +504,5 @@ class ProgressPainter extends CustomPainter {
     return true;
   }
 
-
-  void update(){
-
-  }
+  void update() {}
 }
