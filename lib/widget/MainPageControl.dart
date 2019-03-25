@@ -1,3 +1,5 @@
+import 'package:code_beacon/dio/dio_weather.dart';
+import 'package:code_beacon/model/weather_model_entity.dart';
 import 'package:code_beacon/widget/homeChoosePage.dart';
 import 'package:code_beacon/widget/homePage.dart';
 import 'package:code_beacon/widget/morePage.dart';
@@ -44,10 +46,17 @@ class MainPageControl extends StatefulWidget {
 class _MainPageControlState extends State<MainPageControl> {
   int _CurrentIndex = 0;
   var bottomTitle = ['Home', 'Rooms', 'More'];
-  var _pageList = [new HomePage(), new RoomChooseDemo(), new MorePage()];
+  WeatherModelResultsNow weatherinfo;
+
   var _controller=PageController(initialPage: 0);
   final _DefaultColor=Colors.grey;
   final _ActiveColor=Colors.blue;
+
+  @override
+  void initState() {
+    super.initState();
+    print("initState onControl");
+  }
 
   Icon getIcon(int index) {
     switch (index) {
@@ -83,7 +92,9 @@ class _MainPageControlState extends State<MainPageControl> {
         //pageSnapping: true,
         controller: _controller,
         children: <Widget>[
-            HomePage(),RoomChooseDemo(),MorePage(),
+            HomePage(),
+            RoomChooseDemo(),
+            MorePage(),
         ],
         //physics: NeverScrollableScrollPhysics(),
       ),

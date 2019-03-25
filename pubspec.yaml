@@ -15,10 +15,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  dio: ^2.1.0
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
+  flutter_screenutil: ^0.4.2
+  flutter_spinkit: "^3.1.0"
 
 dev_dependencies:
   flutter_test:
@@ -30,6 +32,16 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
+  fonts:
+  - family: MyIcon
+    fonts:
+      - asset: lib/icons/iconfont.ttf
+  - family: siyuan
+    fonts:
+      - asset: fonts/SourceHanSansSC-Bold.otf
+      - asset: fonts/SourceHanSansSC-Light.otf
+      - asset: fonts/SourceHanSansSC-Normal.otf
+      - asset: fonts/SourceHanSansSC-Regular.otf
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
@@ -43,6 +55,47 @@ flutter:
     - lib/image/room_choose_cookroom.png
     - lib/image/room_choose_hall.png
     - lib/image/tx.png
+    - lib/image/0.png
+    - lib/image/1.png
+    - lib/image/2.png
+    - lib/image/3.png
+    - lib/image/4.png
+    - lib/image/5.png
+    - lib/image/6.png
+    - lib/image/7.png
+    - lib/image/8.png
+    - lib/image/9.png
+    - lib/image/10.png
+    - lib/image/11.png
+    - lib/image/12.png
+    - lib/image/13.png
+    - lib/image/14.png
+    - lib/image/15.png
+    - lib/image/16.png
+    - lib/image/17.png
+    - lib/image/18.png
+    - lib/image/19.png
+    - lib/image/20.png
+    - lib/image/21.png
+    - lib/image/22.png
+    - lib/image/23.png
+    - lib/image/24.png
+    - lib/image/25.png
+    - lib/image/26.png
+    - lib/image/27.png
+    - lib/image/28.png
+    - lib/image/29.png
+    - lib/image/30.png
+    - lib/image/31.png
+    - lib/image/32.png
+    - lib/image/33.png
+    - lib/image/34.png
+    - lib/image/35.png
+    - lib/image/36.png
+    - lib/image/37.png
+    - lib/image/38.png
+    - lib/image/99.png
+    - lib/image/null.png
   # To add assets to your application, add an assets section, like this:
   # assets:
   #  - images/a_dot_burr.jpeg

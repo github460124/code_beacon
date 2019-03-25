@@ -21,14 +21,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
-
-
-
-
-
-
-
 class MorePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
