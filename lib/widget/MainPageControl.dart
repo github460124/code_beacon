@@ -3,6 +3,7 @@ import 'package:code_beacon/model/weather_model_entity.dart';
 import 'package:code_beacon/widget/homeChoosePage.dart';
 import 'package:code_beacon/widget/homePage.dart';
 import 'package:code_beacon/widget/morePage.dart';
+import 'package:code_beacon/widget/myInformation/my_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show debugPaintSizeEnabled;
@@ -94,7 +95,7 @@ class _MainPageControlState extends State<MainPageControl> {
         children: <Widget>[
             HomePage(),
             RoomChooseDemo(),
-            MorePage(),
+            MyPage(),
         ],
         //physics: NeverScrollableScrollPhysics(),
       ),

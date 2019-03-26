@@ -1082,10 +1082,8 @@ class RoomCard extends StatelessWidget {
       onTap: onTap,
       child: Card(
         clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(20.0)),
-        ),
-        elevation: 10,
+        //shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0)),),
+        elevation: 5,
         semanticContainer: false,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

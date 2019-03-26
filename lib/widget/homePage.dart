@@ -109,14 +109,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     DioWeather.fetch().then((result) {
       setState(() {
         weatherinfo = result.now;
-        if (weatherinfo.code == null)
+        /*if (weatherinfo.code == null)
           code = 'null';
         else
           code = weatherinfo.code;
         if (weatherinfo.temperature == null)
           temp = 'null';
         else
-          temp = weatherinfo.temperature;
+          temp = weatherinfo.temperature;*/
+        code = weatherinfo.code;
+        temp = weatherinfo.temperature;
         print('weatherinfo:$weatherinfo');
       });
     }).catchError((e) {
@@ -146,10 +148,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       backgroundColor: Colors.white,
       key: _scaffoldKey,
       appBar: AppBar(
-        title: WeatherWidget(
-          code: code,
-          temp: temp,
-        ),
+        title: code==null?Container():WeatherWidget(code: code, temp: temp,),
         //centerTitle: true,
         //leading: WeatherWidget(weatherModleResult: weatherinfo,),
         actions: <Widget>[
@@ -194,7 +193,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   ),
                 ]),
               ),
-            )
+            ),
           ],
         ),
       ),
