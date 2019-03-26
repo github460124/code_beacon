@@ -103,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
               style: Theme.of(context).textTheme.display1,
             ),
             //TransformIcon(iconData: Icons.add,string: "dian ji wo",),
-            RaisedButton(onPressed: (){}),
+            RaisedButton(onPressed: (){_showNotification();}),
           ],
         ),
       ),
@@ -133,12 +133,10 @@ class _MyHomePageState extends State<MyHomePage> {
     if (payload != null) {
       debugPrint('notification payload: ' + payload);
     }
-//payload 可作为通知的一个标记，区分点击的通知。
-    if(payload != null && payload == "complete") {
-      await Navigator.push(
-        context,
-        new MaterialPageRoute(builder: (context) => Container(child: Text('sec'),),//new SecondScreen(payload)),
-      );
+    //payload 可作为通知的一个标记，区分点击的通知。
+    if (payload != null && payload == "complete") {
+      await Navigator.push(context, new MaterialPageRoute(
+        builder: (context) => Container(child: Text('sec'),),),);
     }
   }
 
