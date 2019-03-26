@@ -1,5 +1,7 @@
 import 'package:code_beacon/widget/transform_icon.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 void main() => runApp(MyApp());
 
@@ -100,7 +102,8 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.display1,
             ),
-            TransformIcon(iconData: Icons.add,string: "dian ji wo",),
+            //TransformIcon(iconData: Icons.add,string: "dian ji wo",),
+            RaisedButton(onPressed: (){}),
           ],
         ),
       ),
@@ -111,9 +114,84 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
-
+  var flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
   @override
   void initState() {
+    super.initState();
     //print("${MediaQuery.of(context).size.width},${MediaQuery.of(context).size.height}");
+    var initializationSettingsAndroid =
+    new AndroidInitializationSettings('app_icon');
+    var initializationSettingsIOS = new IOSInitializationSettings(
+        onDidReceiveLocalNotification: onDidRecieveLocalNotification);
+    var initializationSettings = new InitializationSettings(
+        initializationSettingsAndroid, initializationSettingsIOS);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: onSelectNotification);
   }
+
+  Future onSelectNotification(String payload) async {
+    if (payload != null) {
+      debugPrint('notification payload: ' + payload);
+    }
+//payload 可作为通知的一个标记，区分点击的通知。
+    if(payload != null && payload == "complete") {
+      await Navigator.push(
+        context,
+        new MaterialPageRoute(builder: (context) => Container(child: Text('sec'),),//new SecondScreen(payload)),
+      );
+    }
+  }
+
+  Future onDidRecieveLocalNotification(
+      int id, String title, String body, String payload) async {
+    // 展示通知内容的 dialog.
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => new CupertinoAlertDialog(
+        title: new Text(title),
+        content: new Text(body),
+        actions: [
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            child: new Text('Ok'),
+            onPressed: () async {
+              Navigator.of(context, rootNavigator: true).pop();
+              await Navigator.push(
+                context,
+                new MaterialPageRoute(
+                  builder: (context) => Container(child: Text('sec'),),//new SecondScreen(payload),
+                ),
+              );
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  Future _showNotification() async {
+    //安卓的通知配置，必填参数是渠道id, 名称, 和描述, 可选填通知的图标，重要度等等。
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+        'your channel id', 'your channel name', 'your channel description',
+        importance: Importance.Max, priority: Priority.High);
+    //IOS的通知配置
+    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+    var platformChannelSpecifics = new NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    //显示通知，其中 0 代表通知的 id，用于区分通知。
+    await flutterLocalNotificationsPlugin.show(
+        0, 'title', 'content', platformChannelSpecifics,
+        payload: 'complete');
+  }
+
+  //删除单个通知
+  Future _cancelNotification() async {
+    //参数 0 为需要删除的通知的id
+    await flutterLocalNotificationsPlugin.cancel(0);
+  }
+//删除所有通知
+  Future _cancelAllNotifications() async {
+    await flutterLocalNotificationsPlugin.cancelAll();
+  }
+
 }
